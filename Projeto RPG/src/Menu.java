@@ -35,7 +35,7 @@ public class Menu {
 
     private void cadastrarJogador() {
         System.out.print("Nome: ");
-        String nome = sc.nextLine(); // Aceita nome composto
+        String nome = sc.nextLine();
         System.out.print("Senha: ");
         String senha = sc.nextLine();
         Jogador jogador = new Jogador(jogadores.size() + 1, nome, senha, 0, new ListaPersonagem());
@@ -46,7 +46,7 @@ public class Menu {
     private Jogador login() {
         while (true) {
             System.out.print("Nome do jogador (ou digite 'sair' para voltar): ");
-            String nome = sc.nextLine(); // Aceita nome composto
+            String nome = sc.nextLine();
             if (nome.equalsIgnoreCase("sair")) {
                 return null;
             }
@@ -70,10 +70,11 @@ public class Menu {
             System.out.println("3 - Selecionar Personagem");
             System.out.println("4 - Iniciar Combate PvP");
             System.out.println("5 - Iniciar Combate PvE");
-            System.out.println("6 - Sair");
+            System.out.println("6 - Curar Personagem Fora de Combate");
+            System.out.println("7 - Sair");
             System.out.print("Escolha uma opção: ");
             int opcao = sc.nextInt();
-            sc.nextLine(); // Consome o '\n' antes de ler nomes compostos
+            sc.nextLine(); // Consome o '\n'
 
             switch (opcao) {
                 case 1:
@@ -86,14 +87,16 @@ public class Menu {
                     selecionarPersonagem(jogador);
                     break;
                 case 4:
-                    System.out.println("Iniciando combate PvP...");
-                    // lógica do combate PvP
+                    iniciarCombate("pvp", jogador);
                     break;
                 case 5:
-                    System.out.println("Iniciando combate PvE...");
-                    // lógica do combate PvE
+                    iniciarCombate("pve", jogador);
                     break;
                 case 6:
+                    curarForaCombate(jogador.getPersonagemSelecionado());
+                    break;
+                case 7:
+                    System.out.println("Saindo...");
                     return;
                 default:
                     System.out.println("Opção inválida.");
@@ -108,13 +111,80 @@ public class Menu {
 
     private void criarPersonagem(Jogador jogador) {
         System.out.print("Nome do personagem: ");
-        String nome = sc.nextLine(); // Aceita nome composto
-        Personagem personagem = new Personagem(jogador.personagens.getSize() + 1, nome, 1, 100, 100, 0, new ListaHabilidade());
+        String nome = sc.nextLine();
+        Personagem personagem = new Personagem(jogador.personagens.getSize() + 1, nome, 1, 100, 100, 0);
         jogador.personagens.adicionar(personagem);
         System.out.println("Personagem criado!");
     }
 
     private void selecionarPersonagem(Jogador jogador) {
         jogador.selecionarPersonagem(sc);
+    }
+
+    // --------------------- FUNÇÃO ÚNICA PARA COMBATE ---------------------
+    private void iniciarCombate(String tipo, Jogador jogador) {
+        ArrayList<Personagem> participantes = new ArrayList<>();
+
+        if (tipo.equalsIgnoreCase("pvp")) {
+            if (jogadores.size() < 2) {
+                System.out.println("É necessário pelo menos 2 jogadores cadastrados para PvP!");
+                return;
+            }
+
+            System.out.println("\n=== MODO PVP ===");
+            System.out.println("Escolha o oponente:");
+            for (int i = 0; i < jogadores.size(); i++) {
+                if (!jogadores.get(i).equals(jogador)) {
+                    System.out.println((i + 1) + " - " + jogadores.get(i).getNome());
+                }
+            }
+
+            System.out.print("\n Escolha: ");
+            int indice = sc.nextInt() - 1;
+            sc.nextLine();
+
+            if (indice < 0 || indice >= jogadores.size() || jogadores.get(indice).equals(jogador)) {
+                System.out.println("Oponente inválido!");
+                return;
+            }
+
+            Jogador oponente = jogadores.get(indice);
+
+            // Ambos precisam ter personagem selecionado
+            if (jogador.getPersonagemSelecionado() == null) {
+                System.out.println("\n Você não tem personagem selecionado!");
+                return;
+            }
+            if (oponente.getPersonagemSelecionado() == null) {
+                System.out.println(" O oponente não tem personagem selecionado!");
+                return;
+            }
+
+            participantes.add(jogador.getPersonagemSelecionado());
+            participantes.add(oponente.getPersonagemSelecionado());
+
+        } else if (tipo.equalsIgnoreCase("pve")) {
+            if (jogador.getPersonagemSelecionado() == null) {
+                System.out.println("Selecione um personagem antes de iniciar o combate!");
+                return;
+            }
+
+            participantes.add(jogador.getPersonagemSelecionado());
+
+
+            participantes.add(new Monstro(1,"Goblin", 1, 30, 3, 30, 10));
+            participantes.add(new Monstro(2,"Goblin 2", 2, 50, 5, 50, 20));
+        }
+
+        Arena arena = new Arena(tipo);
+        arena.iniciarBatalha(participantes);
+    }
+
+    private void curarForaCombate(Personagem personagem) {
+        if (personagem == null) {
+            System.out.println("\n Nenhum personagem selecionado.");
+            return;
+        }
+        System.out.println("\n  Personagem curado fora de combate.");
     }
 }

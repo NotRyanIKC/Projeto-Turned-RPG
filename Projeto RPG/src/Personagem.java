@@ -5,16 +5,15 @@ public class Personagem {
     private int vidaMaxima;
     private int vidaAtual;
     private int experiencia = 0 ;
-    private ListaHabilidade habilidades;
 
-    public Personagem(int id, String nome, int nivel, int vidaMaxima, int vidaAtual, int experiencia, ListaHabilidade habilidades) {
+
+    public Personagem(int id, String nome, int nivel, int vidaMaxima, int vidaAtual, int experiencia) {
         this.id = id;
         this.nome = nome;
         this.nivel = nivel;
         this.vidaMaxima = vidaMaxima;
         this.vidaAtual = vidaAtual;
         this.experiencia = experiencia;
-        this.habilidades = habilidades;
     }
 
     public int getId() {
@@ -67,31 +66,44 @@ public class Personagem {
         }
     }
 
-    // public void usarHabilidade(Int IdHabilidade, Personagem alvo){}
-    // public void usarItem(Int IdItem){}
-
-    public void curar(int cura) {
-        this.vidaAtual += cura;
-        if (this.vidaAtual > this.vidaMaxima) {
-            this.vidaAtual = this.vidaMaxima;
-        }
-    }
+    public void curar(int valor) {
+    this.vidaAtual = Math.min(this.vidaMaxima, this.vidaAtual + valor);
+}
 
     public boolean estaVivo() {
         return this.vidaAtual > 0;
     }
 
     public void ganharExperiencia(int exp) {
-        this.experiencia += exp;
-        // Lógica para subir de nível pode ser adicionada aqui
+    this.experiencia += exp;
+    System.out.println(nome + " ganhou " + exp + " de experiência! (Total: " + experiencia + ")");
+
+    // experiência necessária pra subir de nível
+    int experienciaNecessaria = nivel * 50; // Ex: nível 1 → 100 exp, nível 2 → 200 exp, etc.
+
+    // Verifica se o personagem tem experiência suficiente pra subir de nível
+    while (this.experiencia >= experienciaNecessaria) {
+        this.experiencia -= experienciaNecessaria;
+        subirNivel();
+        experienciaNecessaria = nivel * 50; 
+        }
+    }
+
+
+    public void atacar(Personagem alvo) {
+    int dano = (int)(Math.random() * 20 + 10); 
+    System.out.println(this.nome + " atacou " + alvo.getNome() + " e causou " + dano + " de dano!");
+    alvo.receberDano(dano);
     }
 
     public void subirNivel() {
-        this.nivel++;
-        this.vidaMaxima += 10; // Exemplo de aumento de vida máxima ao subir de nível
-        this.vidaAtual = this.vidaMaxima; // Cura completa ao subir de nível
-        this.experiencia = 0; // Reseta experiência ao subir de nível
+    this.nivel++;
+    this.vidaMaxima += 10; 
+    this.vidaAtual = this.vidaMaxima; 
+    System.out.println( nome + " subiu para o nível " + nivel + "!");
+    System.out.println("Vida máxima aumentou para " + vidaMaxima + " e vida foi totalmente restaurada!");
     }
+
 
     
 

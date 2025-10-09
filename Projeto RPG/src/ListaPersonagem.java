@@ -45,7 +45,7 @@ public class ListaPersonagem {
     NodePersonagem current = head;
     while (current != null) {
         Personagem p = current.personagem;
-        System.out.println("ID: " + p.getId() + " | Nome: " + p.getNome());
+        System.out.println("ID: " + p.getId() + " | Nome: " + p.getNome() + " | Nível: " + p.getNivel() + " | Vida: " + p.getVidaAtual() + "/" + p.getVidaMaxima());
         current = current.next;
     }
 }
