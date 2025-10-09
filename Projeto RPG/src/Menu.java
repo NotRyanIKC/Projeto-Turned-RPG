@@ -63,46 +63,46 @@ public class Menu {
     }
 
     private void menuJogador(Jogador jogador) {
-        while (true) {
-            System.out.println("\nMenu do Jogador: " + jogador.getNome());
-            System.out.println("1 - Listar Personagens");
-            System.out.println("2 - Criar Personagem");
-            System.out.println("3 - Selecionar Personagem");
-            System.out.println("4 - Iniciar Combate PvP");
-            System.out.println("5 - Iniciar Combate PvE");
-            System.out.println("6 - Curar Personagem Fora de Combate");
-            System.out.println("7 - Sair");
-            System.out.print("Escolha uma opção: ");
-            int opcao = sc.nextInt();
-            sc.nextLine(); // Consome o '\n'
+    while (true) {
+        System.out.println("\n==============================");
+        System.out.println("Menu do Jogador: " + jogador.getNome());
+        System.out.println("Saldo atual: " + jogador.getSaldoMoedas() + " moedas");
+        System.out.println("==============================");
+        System.out.println("1 - Listar Personagens");
+        System.out.println("2 - Criar Personagem");
+        System.out.println("3 - Selecionar Personagem");
+        System.out.println("4 - Iniciar Combate PvP");
+        System.out.println("5 - Iniciar Combate PvE");
+        System.out.println("6 - Sair");
+        System.out.print("Escolha uma opção: ");
+        int opcao = sc.nextInt();
+        sc.nextLine(); // Consome o '\n'
 
-            switch (opcao) {
-                case 1:
-                    listarPersonagens(jogador);
-                    break;
-                case 2:
-                    criarPersonagem(jogador);
-                    break;
-                case 3:
-                    selecionarPersonagem(jogador);
-                    break;
-                case 4:
-                    iniciarCombate("pvp", jogador);
-                    break;
-                case 5:
-                    iniciarCombate("pve", jogador);
-                    break;
-                case 6:
-                    curarForaCombate(jogador.getPersonagemSelecionado());
-                    break;
-                case 7:
-                    System.out.println("Saindo...");
-                    return;
-                default:
-                    System.out.println("Opção inválida.");
+        switch (opcao) {
+            case 1:
+                listarPersonagens(jogador);
+                break;
+            case 2:
+                criarPersonagem(jogador);
+                break;
+            case 3:
+                selecionarPersonagem(jogador);
+                break;
+            case 4:
+                iniciarCombate("pvp", jogador);
+                break;
+            case 5:
+                iniciarCombate("pve", jogador);
+                break;
+            case 6:
+                System.out.println("Saindo...");
+                return;
+            default:
+                System.out.println("Opção inválida.");
             }
         }
     }
+
 
     private void listarPersonagens(Jogador jogador) {
         System.out.println("Personagens do jogador " + jogador.getNome() + ":");
@@ -112,7 +112,8 @@ public class Menu {
     private void criarPersonagem(Jogador jogador) {
         System.out.print("Nome do personagem: ");
         String nome = sc.nextLine();
-        Personagem personagem = new Personagem(jogador.personagens.getSize() + 1, nome, 1, 100, 100, 0);
+        Personagem personagem = new Personagem(jogador.personagens.getSize() + 1, nome, 1, 100, 100, 0 );
+        personagem.setDono(jogador);
         jogador.personagens.adicionar(personagem);
         System.out.println("Personagem criado!");
     }
@@ -180,11 +181,4 @@ public class Menu {
         arena.iniciarBatalha(participantes);
     }
 
-    private void curarForaCombate(Personagem personagem) {
-        if (personagem == null) {
-            System.out.println("\n Nenhum personagem selecionado.");
-            return;
-        }
-        System.out.println("\n  Personagem curado fora de combate.");
-    }
 }

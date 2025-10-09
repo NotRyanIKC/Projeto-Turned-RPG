@@ -70,6 +70,11 @@ public class Jogador {
         System.out.println("Personagem criado!");
     }
 
+    public void adicionarMoedas(int valor) {
+    saldoMoedas += valor;
+    System.out.println(" Você ganhou " + valor + " moedas! Total: " + saldoMoedas);
+}
+
     
     public void selecionarPersonagem(Scanner sc) {
         if (personagens.getSize() == 0) {

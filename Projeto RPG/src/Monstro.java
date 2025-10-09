@@ -52,5 +52,8 @@ public class Monstro extends Personagem {
         System.out.println(getNome() + " rola um dado (" + dado + ") e ataca " + alvo.getNome() +
                            " causando " + danoTotal + " de dano!");
         alvo.receberDano(danoTotal);
+
+    this.adicionarDanoRecebido(0); // só pra manter coerência
+    this.adicionarDanoCausado(danoTotal); // 🔹 precisa existir esse método
     }
 }

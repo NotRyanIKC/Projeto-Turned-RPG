@@ -6,6 +6,16 @@ public class Personagem {
     private int vidaAtual;
     private int experiencia = 0 ;
 
+    // Novos atributos para o ranking
+    private int danoCausado = 0;
+    private int danoRecebido = 0;
+    private int ordemDeMorte = -1; // -1 significa que ainda está vivo
+
+    private Jogador dono; // referência ao dono do personagem
+
+
+
+
 
     public Personagem(int id, String nome, int nivel, int vidaMaxima, int vidaAtual, int experiencia) {
         this.id = id;
@@ -29,6 +39,14 @@ public class Personagem {
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public Jogador getDono() {
+    return dono;
+    }
+
+    public void setDono(Jogador dono) {
+    this.dono = dono;
     }
 
     public int getNivel() {
@@ -66,6 +84,11 @@ public class Personagem {
         }
     }
 
+    public void adicionarDanoCausado(int dano) {
+    this.danoCausado += dano;
+}
+
+
     public void curar(int valor) {
     this.vidaAtual = Math.min(this.vidaMaxima, this.vidaAtual + valor);
 }
@@ -94,6 +117,7 @@ public class Personagem {
     int dano = (int)(Math.random() * 20 + 10); 
     System.out.println(this.nome + " atacou " + alvo.getNome() + " e causou " + dano + " de dano!");
     alvo.receberDano(dano);
+    this.danoCausado += dano;
     }
 
     public void subirNivel() {
@@ -104,7 +128,23 @@ public class Personagem {
     System.out.println("Vida máxima aumentou para " + vidaMaxima + " e vida foi totalmente restaurada!");
     }
 
+    // Métodos para o ranking
+    public int getDanoCausado() {
+        return danoCausado;
+    }
+    public int getDanoRecebido() {
+        return danoRecebido;
+    }
 
-    
+    public void adicionarDanoRecebido(int dano) {
+        this.danoRecebido += dano;
+    }
+    public int getOrdemDeMorte() {
+        return ordemDeMorte;
+    }
+
+    public void setOrdemDeMorte(int ordemDeMorte) {
+        this.ordemDeMorte = ordemDeMorte;
+    }
 
 }
