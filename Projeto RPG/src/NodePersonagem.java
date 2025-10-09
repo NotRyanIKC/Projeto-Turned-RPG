@@ -4,7 +4,5 @@ public class NodePersonagem {
 
     public NodePersonagem(Personagem personagem) {
         this.personagem = personagem;
-        this.next = null;
     }
-    
 }

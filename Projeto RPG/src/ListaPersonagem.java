@@ -42,13 +42,22 @@ public class ListaPersonagem {
     }
 
     public void listar() {
-    NodePersonagem current = head;
-    while (current != null) {
-        Personagem p = current.personagem;
-        System.out.println("ID: " + p.getId() + " | Nome: " + p.getNome() + " | Nível: " + p.getNivel() + " | Vida: " + p.getVidaAtual() + "/" + p.getVidaMaxima());
-        current = current.next;
+        NodePersonagem current = head;
+        while (current != null) {
+            Personagem p = current.personagem;
+            int xp = p.getExperiencia();
+            int falta = 100 - (xp % 100);
+            System.out.println(
+                "ID: " + p.getId() +
+                " | Nome: " + p.getNome() +
+                " | Nível: " + p.getNivel() +
+                " | Vida: " + p.getVidaAtual() + "/" + p.getVidaMaxima() +
+                " | XP: " + xp + "/100 (falta " + falta + ")"
+            );
+            current = current.next;
+        }
     }
-}
+    
 
     public int getSize() {
         return size;

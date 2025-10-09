@@ -1,37 +1,45 @@
-import java.util.*;
-
 public class Arena {
     private String tipo;
-    private Scanner sc = new Scanner(System.in);
+    private final java.util.Scanner sc = new java.util.Scanner(System.in);
     private final int CURA_PADRAO = 30;
 
-    private Stack<Personagem> rankingFinal = new Stack<>();
+    private PilhaArena rankingFinal = new PilhaArena();
     private int ordemMorteAtual = 1;
 
     public Arena(String tipo) {
         this.tipo = tipo.toUpperCase();
     }
 
-    public void iniciarBatalha(ArrayList<Personagem> participantes) {
-        if (participantes == null || participantes.isEmpty()) {
+    public void iniciarBatalha(FilaArena participantes) {
+        if (participantes == null || participantes.estaVazia()) {
             System.out.println("Nenhum participante foi adicionado à arena.");
             return;
         }
 
         if (tipo.equals("PVP")) {
-            if (participantes.size() != 2) {
+            FilaArena copia = new FilaArena();
+            int count = 0;
+            while (!participantes.estaVazia()) {
+                Personagem p = participantes.remover();
+                copia.adicionar(p);
+                count++;
+            }
+            if (count != 2) {
                 System.out.println("Combate PVP requer exatamente 2 personagens!");
+                while (!copia.estaVazia()) participantes.adicionar(copia.remover());
                 return;
             }
+            while (!copia.estaVazia()) participantes.adicionar(copia.remover());
         } else if (tipo.equals("PVE")) {
             boolean temJogador = false;
             boolean temMonstro = false;
-
-            for (Personagem p : participantes) {
-                if (p instanceof Monstro) temMonstro = true;
-                else temJogador = true;
+            FilaArena buffer = new FilaArena();
+            while (!participantes.estaVazia()) {
+                Personagem p = participantes.remover();
+                buffer.adicionar(p);
+                if (p instanceof Monstro) temMonstro = true; else temJogador = true;
             }
-
+            while (!buffer.estaVazia()) participantes.adicionar(buffer.remover());
             if (!temJogador || !temMonstro) {
                 System.out.println("Combate PVE requer ao menos 1 jogador e 1 monstro!");
                 return;
@@ -41,23 +49,18 @@ public class Arena {
             return;
         }
 
-        Queue<Personagem> fila = new LinkedList<>(participantes);
-
-        rankingFinal.clear();
+        rankingFinal.limpar();
         ordemMorteAtual = 1;
 
-        if (tipo.equals("PVP")) {
-            combatePVP(fila);
-        } else {
-            combatePVE(fila);
-        }
+        if (tipo.equals("PVP")) combatePVP(participantes);
+        else combatePVE(participantes);
 
         exibirRankingFinal();
     }
 
-    private void combatePVP(Queue<Personagem> fila) {
-        Personagem p1 = fila.poll();
-        Personagem p2 = fila.poll();
+    private void combatePVP(FilaArena fila) {
+        Personagem p1 = fila.remover();
+        Personagem p2 = fila.remover();
 
         System.out.println("\nInício do combate PVP: " + p1.getNome() + " VS " + p2.getNome());
         System.out.println("-----------------------------------");
@@ -81,12 +84,10 @@ public class Arena {
                 p2.adicionarDanoRecebido(dano);
             }
 
-            System.out.println("HP atual de " + p1.getNome() + ": " + p1.getVidaAtual());
-            System.out.println("HP atual de " + p2.getNome() + ": " + p2.getVidaAtual());
-
             if (!p2.estaVivo()) {
                 p2.setOrdemDeMorte(ordemMorteAtual++);
-                rankingFinal.push(p2);
+                rankingFinal.adicionar(p2);
+                excluirSeJogador(p2); // <<< remove da conta
                 System.out.println(p2.getNome() + " foi derrotado!");
                 break;
             }
@@ -104,12 +105,10 @@ public class Arena {
                 p1.adicionarDanoRecebido(dano);
             }
 
-            System.out.println("HP atual de " + p1.getNome() + ": " + p1.getVidaAtual());
-            System.out.println("HP atual de " + p2.getNome() + ": " + p2.getVidaAtual());
-
             if (!p1.estaVivo()) {
                 p1.setOrdemDeMorte(ordemMorteAtual++);
-                rankingFinal.push(p1);
+                rankingFinal.adicionar(p1);
+                excluirSeJogador(p1); // <<< remove da conta
                 System.out.println(p1.getNome() + " foi derrotado!");
                 break;
             }
@@ -119,31 +118,34 @@ public class Arena {
 
         System.out.println("\nCombate PVP finalizado!");
 
-        if (p1.estaVivo()) {
+        if (p1.estaVivo() && !p2.estaVivo()) {
             p1.setOrdemDeMorte(ordemMorteAtual++);
-            rankingFinal.push(p1);
+            rankingFinal.adicionar(p1);
             System.out.println("Vencedor: " + p1.getNome() + "!");
-            if (p1.getDono() != null) {
-                p1.getDono().adicionarMoedas(100);
-            }
-        } else if (p2.estaVivo()) {
+            if (p1.getDono() != null) p1.getDono().adicionarMoedas(100);
+        } else if (p2.estaVivo() && !p1.estaVivo()) {
             p2.setOrdemDeMorte(ordemMorteAtual++);
-            rankingFinal.push(p2);
+            rankingFinal.adicionar(p2);
             System.out.println("Vencedor: " + p2.getNome() + "!");
-            if (p2.getDono() != null) {
-                p2.getDono().adicionarMoedas(100);
-            }
+            if (p2.getDono() != null) p2.getDono().adicionarMoedas(100);
+        } else if (p1.estaVivo() && p2.estaVivo()) {
+            System.out.println("Empate! Ambos permaneceram de pé ao fim do turno.");
+            p1.setOrdemDeMorte(ordemMorteAtual++);
+            p2.setOrdemDeMorte(ordemMorteAtual++);
+            rankingFinal.adicionar(p2);
+            rankingFinal.adicionar(p1);
         } else {
             System.out.println("Empate! Ambos caíram ao mesmo tempo.");
         }
     }
 
-    private void combatePVE(Queue<Personagem> fila) {
+    private void combatePVE(FilaArena fila) {
         Personagem jogador = null;
-        ArrayList<Monstro> monstros = new ArrayList<>();
+        ListaMonstro monstros = new ListaMonstro();
 
-        for (Personagem p : fila) {
-            if (p instanceof Monstro) monstros.add((Monstro) p);
+        while (!fila.estaVazia()) {
+            Personagem p = fila.remover();
+            if (p instanceof Monstro) monstros.addLast((Monstro) p);
             else jogador = p;
         }
 
@@ -157,8 +159,8 @@ public class Arena {
 
         while (jogador.estaVivo() && !monstros.isEmpty()) {
             System.out.println("\n--- Turno " + turno + " ---");
-
             System.out.println(jogador.getNome() + " (HP: " + jogador.getVidaAtual() + ")");
+
             for (int i = 0; i < monstros.size(); i++) {
                 Monstro m = monstros.get(i);
                 System.out.println(" " + (i + 1) + ") " + m.getNome() + " - HP: " + m.getVidaAtual());
@@ -188,17 +190,18 @@ public class Arena {
 
                     if (!alvo.estaVivo()) {
                         alvo.setOrdemDeMorte(ordemMorteAtual++);
-                        rankingFinal.push(alvo);
+                        rankingFinal.adicionar(alvo);
                         System.out.println(alvo.getNome() + " foi derrotado!");
-                        monstros.remove(alvo);
+                        monstros.remove(alvo); // remove da lista de monstros
                     }
                 } else {
                     System.out.println("Escolha inválida! Você perdeu o turno!");
                 }
             }
 
-            for (Monstro m : new ArrayList<>(monstros)) {
+            for (int i = 0; i < monstros.size(); i++) {
                 if (!jogador.estaVivo()) break;
+                Monstro m = monstros.get(i);
                 int vidaAntes = jogador.getVidaAtual();
                 m.atacar(jogador);
                 int dano = Math.max(0, vidaAntes - jogador.getVidaAtual());
@@ -210,28 +213,26 @@ public class Arena {
 
         if (jogador.estaVivo()) {
             jogador.setOrdemDeMorte(ordemMorteAtual++);
-            rankingFinal.push(jogador);
+            rankingFinal.adicionar(jogador);
             System.out.println("\nVitória! Todos os monstros foram derrotados!");
 
             int recompensaTotal = 0;
-            for (Personagem p : rankingFinal) {
+            PilhaArena temp = new PilhaArena();
+            while (!rankingFinal.estaVazia()) {
+                Personagem p = rankingFinal.remover();
                 if (p instanceof Monstro) {
                     recompensaTotal += ((Monstro) p).getRecompensaMoedas();
                     jogador.ganharExperiencia(((Monstro) p).getRecompensaExp());
-                    
-                    
-            
                 }
+                temp.adicionar(p);
             }
+            while (!temp.estaVazia()) rankingFinal.adicionar(temp.remover());
 
-            if (jogador.getDono() != null) {
-                jogador.getDono().adicionarMoedas(recompensaTotal);
-            }
-            
-
+            if (jogador.getDono() != null) jogador.getDono().adicionarMoedas(recompensaTotal);
         } else {
             jogador.setOrdemDeMorte(ordemMorteAtual++);
-            rankingFinal.push(jogador);
+            rankingFinal.adicionar(jogador);
+            excluirSeJogador(jogador); // <<< remove da conta
             System.out.println("\nDerrota! O jogador caiu em batalha.");
         }
     }
@@ -239,20 +240,32 @@ public class Arena {
     private void exibirRankingFinal() {
         System.out.println("\n=====  RANKING FINAL  =====");
 
-        Stack<Personagem> temp = new Stack<>();
-        while (!rankingFinal.isEmpty()) {
-            temp.push(rankingFinal.pop());
-        }
+        PilhaArena temp = new PilhaArena();
+        while (!rankingFinal.estaVazia()) temp.adicionar(rankingFinal.remover());
 
         int pos = 1;
-        while (!temp.isEmpty()) {
-            Personagem p = temp.pop();
+        while (!temp.estaVazia()) {
+            Personagem p = temp.remover();
             System.out.printf("%dº - %s (Lvl %d)\n", pos++, p.getNome(), p.getNivel());
             System.out.println("Ordem de morte: " + p.getOrdemDeMorte());
             System.out.println("Dano causado: " + p.getDanoCausado());
             System.out.println("Dano recebido: " + p.getDanoRecebido());
+            rankingFinal.adicionar(p);
         }
 
         System.out.println("=================================\n");
+    }
+
+    // ====== remove o personagem do dono quando for derrotado ======
+    private void excluirSeJogador(Personagem p) {
+        if (p == null || p instanceof Monstro) return;
+        Jogador dono = p.getDono();
+        if (dono != null && dono.personagens != null) {
+            dono.personagens.remover(p.getId()); // usa teu ListaPersonagem.remover(int id)
+            if (dono.getPersonagemSelecionado() == p) {
+                dono.setPersonagemSelecionado(null);
+            }
+            System.out.println("Personagem " + p.getNome() + " removido da conta de " + dono.getNome() + ".");
+        }
     }
 }
