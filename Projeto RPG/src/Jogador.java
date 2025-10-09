@@ -3,12 +3,15 @@ public class Jogador {
     private String nome;
     private String senha;
     private double saldoCristais;
+    ListaPersonagem personagens = new ListaPersonagem();
+       
 
-    public Jogador(int id, String nome, String senha, double saldoCristais) {
+    public Jogador(int id, String nome, String senha, double saldoCristais, ListaPersonagem personagens) {
         this.id = id;
         this.nome = nome;
         this.senha = senha;
         this.saldoCristais = saldoCristais;
+        this.personagens = personagens;
     }
 
     public int getId() {
@@ -51,5 +54,5 @@ public class Jogador {
         // Lógica para selecionar um personagem
     }
 
-    
+
 }
