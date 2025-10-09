@@ -5,7 +5,7 @@ public class Personagem {
     private int vidaMaxima;
     private int vidaAtual;
     private int experiencia = 0 ;
-    ListaHabilidade habilidades = new ListaHabilidade();
+    private ListaHabilidade habilidades;
 
     public Personagem(int id, String nome, int nivel, int vidaMaxima, int vidaAtual, int experiencia, ListaHabilidade habilidades) {
         this.id = id;
@@ -14,6 +14,7 @@ public class Personagem {
         this.vidaMaxima = vidaMaxima;
         this.vidaAtual = vidaAtual;
         this.experiencia = experiencia;
+        this.habilidades = habilidades;
     }
 
     public int getId() {

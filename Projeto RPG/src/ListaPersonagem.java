@@ -54,4 +54,14 @@ public class ListaPersonagem {
         return size;
     }
 
+    public Personagem buscarPorId(int id) {
+        NodePersonagem current = head;
+        while (current != null) {
+            if (current.personagem.getId() == id) {
+                return current.personagem;
+            }
+            current = current.next;
+        }
+        return null;
+    }
 }

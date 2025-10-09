@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 public class Jogador {
     private int id;
     private String nome;
@@ -46,12 +48,38 @@ public class Jogador {
 
     
 
-    public void criarPersonagem() {
-        // Lógica para criar um personagem
+    public void criarPersonagem(Scanner sc) {
+        System.out.print("Nome do personagem: ");
+        String nomePersonagem = sc.next();
+        Personagem personagem = new Personagem(
+            personagens.getSize() + 1, // id único
+            nomePersonagem,
+            1, // nível inicial
+            100, // vida máxima
+            100, // vida atual
+            0, // experiência inicial
+            new ListaHabilidade()
+        );
+        personagens.adicionar(personagem);
+        System.out.println("Personagem criado!");
     }
 
-    public void selecionarPersonagem() {
-        // Lógica para selecionar um personagem
+    public Personagem selecionarPersonagem(Scanner sc) {
+        if (personagens.getSize() == 0) {
+            System.out.println("Nenhum personagem cadastrado.");
+            return null;
+        }
+        personagens.listar();
+        System.out.print("Digite o ID do personagem que deseja selecionar: ");
+        int personagemId = sc.nextInt();
+        sc.nextLine(); // Consome o '\n'
+        Personagem selecionado = personagens.buscarPorId(personagemId);
+        if (selecionado != null) {
+            System.out.println("Personagem selecionado: " + selecionado.getNome());
+            return selecionado;
+        }
+        System.out.println("Personagem não encontrado.");
+        return null;
     }
 
 
