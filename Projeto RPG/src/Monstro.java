@@ -13,29 +13,18 @@ public class Monstro extends Personagem {
         this.recompensaMoedas = recompensaMoedas;
     }
 
-    public int getDanoBase() { return danoBase; }
-    public void setDanoBase(int danoBase) { this.danoBase = danoBase; }
     public int getRecompensaExp() { return recompensaExp; }
-    public void setRecompensaExp(int recompensaExp) { this.recompensaExp = recompensaExp; }
     public int getRecompensaMoedas() { return recompensaMoedas; }
-    public void setRecompensaMoedas(int recompensaMoedas) { this.recompensaMoedas = recompensaMoedas; }
 
     @Override
     public void atacar(Personagem alvo) {
-        if (!this.estaVivo()) {
-            System.out.println(getNome() + " está morto e não pode atacar!");
-            return;
-        }
+        if (!estaVivo()) return;
         int dado = random.nextInt(6) + 1;
         int danoTotal = danoBase + dado;
-        System.out.println(getNome() + " rola um dado (" + dado + ") e ataca " + alvo.getNome() +
-                " causando " + danoTotal + " de dano!");
+        System.out.println(getNome() + " rola um dado (" + dado + ") e ataca " + alvo.getNome() + " causando " + danoTotal + " de dano!");
         int vidaAntes = alvo.getVidaAtual();
         alvo.receberDano(danoTotal);
         int aplicado = Math.max(0, vidaAntes - alvo.getVidaAtual());
-        if (aplicado > 0) this.adicionarDanoCausado(aplicado);
+        if (aplicado > 0) adicionarDanoCausado(aplicado);
     }
-
-    public int getRecompensaMoedasTotal() { return recompensaMoedas; }
-    public int getRecompensaExpTotal() { return recompensaExp; }
 }

@@ -6,31 +6,27 @@ public class ListaMonstro {
         NodeMonstro n = new NodeMonstro(m);
         if (head == null) head = n;
         else {
-            NodeMonstro cur = head;
-            while (cur.next != null) cur = cur.next;
-            cur.next = n;
+            NodeMonstro c = head;
+            while (c.next != null) c = c.next;
+            c.next = n;
         }
         size++;
     }
 
     public Monstro get(int index) {
         if (index < 0 || index >= size) throw new IndexOutOfBoundsException();
-        NodeMonstro cur = head;
-        for (int i = 0; i < index; i++) cur = cur.next;
-        return cur.value;
+        NodeMonstro c = head;
+        for (int i = 0; i < index; i++) c = c.next;
+        return c.value;
     }
 
     public boolean remove(Monstro m) {
         if (head == null) return false;
         if (head.value == m) { head = head.next; size--; return true; }
-        NodeMonstro cur = head;
-        while (cur.next != null) {
-            if (cur.next.value == m) {
-                cur.next = cur.next.next;
-                size--;
-                return true;
-            }
-            cur = cur.next;
+        NodeMonstro c = head;
+        while (c.next != null) {
+            if (c.next.value == m) { c.next = c.next.next; size--; return true; }
+            c = c.next;
         }
         return false;
     }

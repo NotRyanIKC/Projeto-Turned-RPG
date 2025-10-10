@@ -1,50 +1,30 @@
 public class ListaPersonagem {
-    private NodePersonagem head;
+    NodePersonagem head;
     private int size;
 
-    public ListaPersonagem() {
-        this.head = null;
-        this.size = 0;
-    }
-
     public void adicionar(Personagem personagem) {
-        NodePersonagem newNode = new NodePersonagem(personagem);
-        if (head == null) {
-            head = newNode;
-        } else {
-            NodePersonagem current = head;
-            while (current.next != null) {
-                current = current.next;
-            }
-            current.next = newNode;
+        NodePersonagem n = new NodePersonagem(personagem);
+        if (head == null) head = n;
+        else {
+            NodePersonagem c = head;
+            while (c.next != null) c = c.next;
+            c.next = n;
         }
         size++;
     }
 
     public void remover(int id) {
         if (head == null) return;
-
-        if (head.personagem.getId() == id) {
-            head = head.next;
-            size--;
-            return;
-        }
-
-        NodePersonagem current = head;
-        while (current.next != null && current.next.personagem.getId() != id) {
-            current = current.next;
-        }
-
-        if (current.next != null) {
-            current.next = current.next.next;
-            size--;
-        }
+        if (head.personagem.getId() == id) { head = head.next; size--; return; }
+        NodePersonagem c = head;
+        while (c.next != null && c.next.personagem.getId() != id) c = c.next;
+        if (c.next != null) { c.next = c.next.next; size--; }
     }
 
     public void listar() {
-        NodePersonagem current = head;
-        while (current != null) {
-            Personagem p = current.personagem;
+        NodePersonagem c = head;
+        while (c != null) {
+            Personagem p = c.personagem;
             int xp = p.getExperiencia();
             int falta = 100 - (xp % 100);
             System.out.println(
@@ -52,24 +32,20 @@ public class ListaPersonagem {
                 " | Nome: " + p.getNome() +
                 " | Nível: " + p.getNivel() +
                 " | Vida: " + p.getVidaAtual() + "/" + p.getVidaMaxima() +
-                " | XP: " + xp + "/100 (falta " + falta + ")"
+                " | XP: " + xp + "/100 (falta " + falta + ")" +
+                " | Curas: " + p.getCargasCura()
             );
-            current = current.next;
+            c = c.next;
         }
     }
-    
 
-    public int getSize() {
-        return size;
-    }
+    public int getSize() { return size; }
 
     public Personagem buscarPorId(int id) {
-        NodePersonagem current = head;
-        while (current != null) {
-            if (current.personagem.getId() == id) {
-                return current.personagem;
-            }
-            current = current.next;
+        NodePersonagem c = head;
+        while (c != null) {
+            if (c.personagem.getId() == id) return c.personagem;
+            c = c.next;
         }
         return null;
     }

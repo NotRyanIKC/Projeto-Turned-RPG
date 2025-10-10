@@ -5,13 +5,8 @@ public class FilaArena {
 
     public void adicionar(Personagem p) {
         NodePersonagem n = new NodePersonagem(p);
-        if (tail == null) {
-            head = n;
-            tail = n;
-        } else {
-            tail.next = n;
-            tail = n;
-        }
+        if (tail == null) { head = n; tail = n; }
+        else { tail.next = n; tail = n; }
         size++;
     }
 
@@ -24,15 +19,6 @@ public class FilaArena {
         return v;
     }
 
-    public Personagem frente() {
-        return head == null ? null : head.personagem;
-    }
-
-    public boolean estaVazia() {
-        return head == null;
-    }
-
-    public int tamanho() {
-        return size;
-    }
+    public boolean estaVazia() { return head == null; }
+    public int tamanho() { return size; }
 }

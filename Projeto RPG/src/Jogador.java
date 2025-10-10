@@ -17,29 +17,18 @@ public class Jogador {
     }
 
     public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
     public String getNome() { return nome; }
-    public void setNome(String nome) { this.nome = nome; }
     public String getSenha() { return senha; }
-    public void setSenha(String senha) { this.senha = senha; }
     public double getSaldoMoedas() { return saldoMoedas; }
-    public void setSaldoMoedas(double saldoMoedas) { this.saldoMoedas = saldoMoedas; }
+    public void setSaldoMoedas(double v) { this.saldoMoedas = v; }
 
-    public Personagem getPersonagemSelecionado() {
-        return personagemSelecionado;
-    }
-
-    public void setPersonagemSelecionado(Personagem personagem) {
-        this.personagemSelecionado = personagem;
-    }
-
-    public void cadastrar() {
-    }
+    public Personagem getPersonagemSelecionado() { return personagemSelecionado; }
+    public void setPersonagemSelecionado(Personagem personagem) { this.personagemSelecionado = personagem; }
 
     public void criarPersonagem(Scanner sc) {
         System.out.print("Nome do personagem: ");
         String nomePersonagem = sc.nextLine();
-        Personagem personagem = new Personagem(nomePersonagem, 100, 10, 5, 1, this) {};
+        Personagem personagem = new Personagem(personagens.getSize() + 1, nomePersonagem, 1, 100, 12, 4, this) {};
         personagens.adicionar(personagem);
         System.out.println("Personagem criado!");
     }
@@ -54,12 +43,9 @@ public class Jogador {
             System.out.println("Nenhum personagem cadastrado.");
             return;
         }
-
         personagens.listar();
         System.out.print("Digite o ID do personagem que deseja selecionar: ");
-        int personagemId = sc.nextInt();
-        sc.nextLine();
-
+        int personagemId = Integer.parseInt(sc.nextLine().trim());
         Personagem selecionado = personagens.buscarPorId(personagemId);
         if (selecionado != null) {
             personagemSelecionado = selecionado;
@@ -70,38 +56,20 @@ public class Jogador {
     }
 
     public void curarForaCombate(Personagem personagem, Scanner sc) {
-        if (personagem == null) {
-            System.out.println("Nenhum personagem selecionado!");
-            return;
-        }
-
-        if (!personagem.estaVivo()) {
-            System.out.println("Seu personagem está morto e precisa de uma cura completa!");
-        }
-
+        if (personagem == null) { System.out.println("Nenhum personagem selecionado!"); return; }
         int vidaFaltando = personagem.getVidaMaxima() - personagem.getVidaAtual();
-        if (vidaFaltando == 0) {
-            System.out.println("O personagem já está com a vida cheia!");
-            return;
-        }
-
+        if (vidaFaltando == 0) { System.out.println("O personagem já está com a vida cheia!"); return; }
         double custoPorPonto = 0.5;
         double custoTotal = vidaFaltando * custoPorPonto;
-
         System.out.println("Cura completa vai custar " + custoTotal + " moedas. Deseja confirmar? (s/n)");
         String opcao = sc.nextLine();
-
         if (opcao.equalsIgnoreCase("s")) {
             if (saldoMoedas >= custoTotal) {
                 saldoMoedas -= custoTotal;
                 personagem.curar(vidaFaltando);
                 System.out.println(personagem.getNome() + " foi totalmente curado!");
                 System.out.println("Saldo restante: " + saldoMoedas);
-            } else {
-                System.out.println("Você não tem moedas suficientes!");
-            }
-        } else {
-            System.out.println("Cura cancelada.");
-        }
+            } else System.out.println("Você não tem moedas suficientes!");
+        } else System.out.println("Cura cancelada.");
     }
 }

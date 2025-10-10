@@ -20,7 +20,5 @@ public class ListaJogador {
         return c.value;
     }
 
-    public int size() {
-        return size;
-    }
+    public int size() { return size; }
 }

@@ -1,23 +1,23 @@
 public class PilhaArena {
-    private NodePersonagem top;
+    private NodePersonagem topo;
     private int size;
 
     public void adicionar(Personagem p) {
         NodePersonagem n = new NodePersonagem(p);
-        n.next = top;
-        top = n;
+        n.next = topo;
+        topo = n;
         size++;
     }
 
     public Personagem remover() {
-        if (top == null) return null;
-        Personagem v = top.personagem;
-        top = top.next;
+        if (topo == null) return null;
+        Personagem p = topo.personagem;
+        topo = topo.next;
         size--;
-        return v;
+        return p;
     }
 
-    public boolean estaVazia() { return top == null; }
+    public boolean estaVazia() { return topo == null; }
+    public void limpar() { topo = null; size = 0; }
     public int tamanho() { return size; }
-    public void limpar() { top = null; size = 0; }
 }

@@ -3,7 +3,6 @@ import java.util.Scanner;
 public class Menu {
     private final ListaJogador jogadores = new ListaJogador();
     private final Scanner sc;
-
     public Menu(Scanner sc) { this.sc = sc; }
 
     public void menuPrincipal() {
@@ -42,7 +41,6 @@ public class Menu {
             if (nome.equalsIgnoreCase("sair")) return null;
             System.out.print("Senha: ");
             String senha = sc.nextLine();
-
             for (int i = 0; i < jogadores.size(); i++) {
                 Jogador j = jogadores.get(i);
                 if (j.getNome().equals(nome) && j.getSenha().equals(senha)) {
@@ -51,7 +49,7 @@ public class Menu {
                     return j;
                 }
             }
-            System.out.println("Nome ou senha incorretos."); 
+            System.out.println("Nome ou senha incorretos.");
             pause();
         }
     }
@@ -69,7 +67,8 @@ public class Menu {
             System.out.println("4 - Iniciar Combate PvP");
             System.out.println("5 - Iniciar Combate PvE");
             System.out.println("6 - Curar Personagem (fora do combate)");
-            System.out.println("7 - Sair");
+            System.out.println("7 - Recarregar Cura (65 moedas)");
+            System.out.println("8 - Sair");
             int op = lerInt("Escolha: ");
 
             if (op == 1) { listarPersonagens(jogador); pause(); }
@@ -78,7 +77,8 @@ public class Menu {
             else if (op == 4) { iniciarCombate("pvp", jogador); pause(); }
             else if (op == 5) { iniciarCombate("pve", jogador); pause(); }
             else if (op == 6) { curarForaCombate(jogador); pause(); }
-            else if (op == 7) return;
+            else if (op == 7) { recarregarCura(jogador); pause(); }
+            else if (op == 8) return;
             else { System.out.println("Opção inválida."); pause(); }
         }
     }
@@ -107,59 +107,55 @@ public class Menu {
     private void curarForaCombate(Jogador jogador) {
         clear();
         Personagem selecionado = jogador.getPersonagemSelecionado();
-        if (selecionado == null) {
-            System.out.println("Nenhum personagem selecionado! Selecione primeiro.");
-            return;
-        }
+        if (selecionado == null) { System.out.println("Nenhum personagem selecionado!"); return; }
         jogador.curarForaCombate(selecionado, sc);
     }
 
     private void iniciarCombate(String tipo, Jogador jogador) {
         clear();
         FilaArena fila = new FilaArena();
+        if (jogador.getPersonagemSelecionado() != null) {
+            jogador.getPersonagemSelecionado().resetarCurasParaNovaBatalha();
+        }
 
         if (tipo.equalsIgnoreCase("pvp")) {
-            if (jogadores.size() < 2) {
-                System.out.println("Precisa de pelo menos 2 jogadores para PvP.");
-                return;
-            }
+            if (jogadores.size() < 2) { System.out.println("Precisa de pelo menos 2 jogadores para PvP."); return; }
             System.out.println("Escolha o oponente:");
             for (int i = 0; i < jogadores.size(); i++) {
                 Jogador j = jogadores.get(i);
                 if (j != jogador) System.out.println((i + 1) + " - " + j.getNome());
             }
             int idx = lerInt("Índice: ") - 1;
-            if (idx < 0 || idx >= jogadores.size()) {
-                System.out.println("Índice inválido.");
-                return;
-            }
+            if (idx < 0 || idx >= jogadores.size()) { System.out.println("Índice inválido."); return; }
             Jogador op = jogadores.get(idx);
-            if (op == jogador) {
-                System.out.println("Não pode lutar consigo mesmo.");
-                return;
-            }
+            if (op == jogador) { System.out.println("Não pode lutar consigo mesmo."); return; }
             if (jogador.getPersonagemSelecionado() == null || op.getPersonagemSelecionado() == null) {
-                System.out.println("Ambos precisam selecionar um personagem.");
-                return;
+                System.out.println("Ambos precisam selecionar um personagem."); return;
             }
             fila.adicionar(jogador.getPersonagemSelecionado());
             fila.adicionar(op.getPersonagemSelecionado());
-            new Arena("pvp").iniciarBatalha(fila);
+            new Arena("pvp", sc).iniciarBatalha(fila);
         } else if (tipo.equalsIgnoreCase("pve")) {
-            if (jogador.getPersonagemSelecionado() == null) {
-                System.out.println("Selecione um personagem antes.");
-                return;
-            }
+            if (jogador.getPersonagemSelecionado() == null) { System.out.println("Selecione um personagem antes."); return; }
             fila.adicionar(jogador.getPersonagemSelecionado());
-            fila.adicionar(new Monstro(1, "Goblin", 1, 40, 4, 30, 10));
-            fila.adicionar(new Monstro(2, "Orc", 2, 70, 7, 60, 20));
-            new Arena("pve").iniciarBatalha(fila);
+            fila.adicionar(new Monstro(1, "Goblin", 1, 40, 4, 30, 20));
+            fila.adicionar(new Monstro(2, "Orc", 2, 70, 7, 60, 40));
+            new Arena("pve", sc).iniciarBatalha(fila);
         } else {
             System.out.println("Tipo inválido.");
         }
     }
 
-    // ===== utils =====
+    private void recarregarCura(Jogador jogador) {
+        Personagem sel = jogador.getPersonagemSelecionado();
+        if (sel == null) { System.out.println("Nenhum personagem selecionado!"); return; }
+        int custo = 65;
+        if (jogador.getSaldoMoedas() < custo) { System.out.println("Moedas insuficientes. Precisa de " + custo + "."); return; }
+        jogador.setSaldoMoedas(jogador.getSaldoMoedas() - custo);
+        sel.adicionarCargasCura(1);
+        System.out.println("Cura recarregada! Cargas: " + sel.getCargasCura() + ". Saldo: " + jogador.getSaldoMoedas());
+    }
+
     private int lerInt(String prompt) {
         while (true) {
             System.out.print(prompt);
@@ -168,14 +164,6 @@ public class Menu {
             catch (NumberFormatException e) { System.out.println("Digite um número válido."); }
         }
     }
-
-    private void pause() {
-        System.out.print("\nPressione ENTER para continuar...");
-        sc.nextLine();
-    }
-
-    private void clear() {
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
-    }
+    private void pause() { System.out.print("\nPressione ENTER para continuar..."); sc.nextLine(); }
+    private void clear() { System.out.print("\033[H\033[2J"); System.out.flush(); }
 }
