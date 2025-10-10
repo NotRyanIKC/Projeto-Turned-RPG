@@ -24,7 +24,7 @@ O projeto demonstra o uso prático de **listas, pilhas e filas** em Java, integr
 - Pode lutar em modo **PvP** (contra outro jogador) ou **PvE** (contra monstros).
 
 ### ⚔️ `Personagem`
-- Contém atributos de vida, ataque, defesa e experiência.
+- Contém atributos de vida, ataque e experiência.
 - Pode atacar, curar-se e subir de nível automaticamente.
 - Cada nível aumenta **vida máxima** e **dano base**.
 - Começa com **5 curas por batalha**.
@@ -122,5 +122,5 @@ O projeto demonstra o uso prático de **listas, pilhas e filas** em Java, integr
 ## 🧾 Créditos Técnicos
 - Linguagem: **Java 17+**
 - Paradigma: **POO + Estruturas de Dados**
-- Desenvolvido por: **Victor & Lucas**
+- Desenvolvido por: **Victor Sampaio, Ryan Cavalcanti, Icaro Santos e Pedro Augusto**
 - Revisado por: **Lume (ChatGPT GPT-5)**  
